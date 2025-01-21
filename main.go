@@ -93,15 +93,23 @@ func BFS(graph Graph, start, end int) [][]int {
 			paths = append(paths, path)
 			continue
 		}
-	
+
 		for _, neighbor := range graph[node] {
-			newPath := append([]int{}, path...)
-			newPath = append(newPath, neighbor)
-			queue = append(queue, newPath)
-			
+			if !contain(path, neighbor) {
+				newPath := append([]int{}, path...)
+				newPath = append(newPath, neighbor)
+				queue = append(queue, newPath)
+			}
 		}
-	
 	}
 
 	return paths
+}
+func contain(path []int, node int) bool {
+	for _, n := range path {
+		if n == node {
+			return true
+		}
+	}
+	return false
 }
