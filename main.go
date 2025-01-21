@@ -82,50 +82,26 @@ func createGraph(rooms []string, tunnels []string) Graph {
 
 	return graph
 }
-func BFS(graph Graph, start, end int) []int {
-
-	queue := []int{start}
-
-	//keep track of the rooms we've encountered
-	visited := make(map[int]bool)
-
-	//to remember how we reached to each room
-	parent := make(map[int]int)
-
-	//first in first out basis
-	fmt.Println(graph)
-	for _, R := range graph {
-		for _, v := range R {
-
-			current := v
-
-			if current == end {
-				return reconstructPath(parent, start, end)
-			}
-
-			for _, neighbor := range graph[current] {
-				if !visited[neighbor] {
-					visited[neighbor] = true
-
-					// this helps us remember the path
-					parent[neighbor] = current
-					fmt.Println(parent)
-					queue = append(queue, neighbor)
-				}
-			}
+func BFS(graph Graph, start, end int) [][]int {
+	var paths [][]int
+	queue := [][]int{{start}}
+	for len(queue) > 0 {
+		path := queue[0]
+		queue = queue[1:]
+		node := path[len(path)-1]
+		if node == end {
+			paths = append(paths, path)
+			continue
 		}
-		// queue = queue[1:]
+	
+		for _, neighbor := range graph[node] {
+			newPath := append([]int{}, path...)
+			newPath = append(newPath, neighbor)
+			queue = append(queue, newPath)
+			
+		}
+	
 	}
 
-	return nil // No path found
-}
-
-func reconstructPath(parent map[int]int, start, end int) []int {
-	path := []int{end}
-
-	for current := end; current != start; current = parent[current] {
-		path = append([]int{parent[current]}, path...)
-		fmt.Println(current, end)
-	}
-	return path
+	return paths
 }
