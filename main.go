@@ -54,7 +54,7 @@ func main() {
 
 	graph := createGraph(rooms, tunnels)
 	path := BFS(graph, startRoom, starttunnel)
-	fmt.Println(path)
+	fmt.Println(path[0])
 
 }
 
