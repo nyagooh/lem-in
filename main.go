@@ -27,7 +27,7 @@ func main() {
 		tunnels                []string
 		bfs                    []string
 		startRoom, starttunnel int
-		end, start,ant        int
+		end, start, ant        int
 	)
 
 	for scanner.Scan() {
@@ -35,7 +35,7 @@ func main() {
 		bfs = append(bfs, line)
 	}
 	// ants, _ = strconv.Atoi(strings.TrimSpace(bfs[0]))
-	ant,_ = strconv.Atoi(bfs[0])
+	ant, _ = strconv.Atoi(bfs[0])
 	for i, ch := range bfs {
 		if ch == "##start" {
 			startant1 := bfs[i+1]
@@ -54,12 +54,12 @@ func main() {
 
 	graph := createGraph(rooms, tunnels)
 	path := BFS(graph, startRoom, starttunnel)
-	fmt.Println(assignPathsToAnts(path, ant))
-	
+	fmt.Println(sortPaths(path))
+	fmt.Println(ant)
 
 }
 
-//this graph takes in the rooms and the connections to the room
+// this graph takes in the rooms and the connections to the room
 type Graph map[int][]int
 
 func createGraph(rooms []string, tunnels []string) Graph {
@@ -114,15 +114,28 @@ func contain(path []int, node int) bool {
 	}
 	return false
 }
-func assignPathsToAnts(paths [][]int, antCount int) [][]int {
-    totalPaths := len(paths)
-   
-    antPaths := make([][]int, antCount)
-    for i := 0; i < totalPaths; i++ {
-        antIndex := i % antCount
-        antPaths[antIndex] = append(antPaths[antIndex], paths[antIndex])
-    }
 
-    return antPaths
+func sortPaths(paths [][]int) [][]int {
+	if len(paths) == 0 {
+		return nil
+	}
+	var result [][]int
+	used := make([]bool, len(paths))
+
+	// For each path
+	for i := 0; i < len(paths); i++ {
+		if used[i] {
+			continue
+		}
+		result = append(result, paths[i])
+		used[i] = true
+		for j := i + 1; j < len(paths); j++ {
+			if !used[j] && paths[i][1] == paths[j][1] {
+				result = append(result, paths[j])
+				used[j] = true
+			}
+		}
+	}
+
+	return result
 }
-
