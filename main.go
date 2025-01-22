@@ -115,27 +115,18 @@ func contain(path []int, node int) bool {
 	return false
 }
 
-func sortPaths(paths [][]int) [][]int {
+type group map[int][][]int
+
+func sortPaths(paths [][]int) group {
 	if len(paths) == 0 {
 		return nil
 	}
-	var result [][]int
-	used := make([]bool, len(paths))
+	groups := make(group)
 
-	// For each path
-	for i := 0; i < len(paths); i++ {
-		if used[i] {
-			continue
-		}
-		result = append(result, paths[i])
-		used[i] = true
-		for j := i + 1; j < len(paths); j++ {
-			if !used[j] && paths[i][1] == paths[j][1] {
-				result = append(result, paths[j])
-				used[j] = true
-			}
+	for _, path := range paths {
+		if len(path) > 1 {
+			groups[path[1]] = append(groups[path[1]], path)
 		}
 	}
-
-	return result
+	return groups
 }
