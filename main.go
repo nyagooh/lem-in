@@ -27,7 +27,7 @@ func main() {
 		tunnels                []string
 		bfs                    []string
 		startRoom, starttunnel int
-		end, start,ant            int
+		end, start,ant        int
 	)
 
 	for scanner.Scan() {
@@ -54,7 +54,8 @@ func main() {
 
 	graph := createGraph(rooms, tunnels)
 	path := BFS(graph, startRoom, starttunnel)
-	fmt.Println(path[0])
+	fmt.Println(assignPathsToAnts(path, ant))
+	
 
 }
 
@@ -113,24 +114,15 @@ func contain(path []int, node int) bool {
 	}
 	return false
 }
-//track ant movement
-func simulateAntMovement(path [][]int, antCount int) [][]int{
-    if len(path) < 2 {
-        fmt.Println("Path is too short")
+func assignPathsToAnts(paths [][]int, antCount int) [][]int {
+    totalPaths := len(paths)
+   
+    antPaths := make([][]int, antCount)
+    for i := 0; i < totalPaths; i++ {
+        antIndex := i % antCount
+        antPaths[antIndex] = append(antPaths[antIndex], paths[antIndex])
     }
-	// start, end := path[0][0], path[0][len(path[0])-1]
-	antpositions := make([]int,antCount)
-	completed := 0
-	//we need to assign each ant a path to follow
-	antpaths := make([][]int,antCount)
 
-	//assign each ant to a path to follow. This is done by cycling through the available paths, even if there are more ants than paths.
-	for i:=0;i<antCount;i++ {
-		//assign each ant to start position they all start at one
-		antpositions[i]=path[i][0]
-		//cycle through the available paths, even if there are more ants than paths
-		paths := path[i%len(path)]
-		antpaths[i] = paths
-	}
-
+    return antPaths
 }
+
