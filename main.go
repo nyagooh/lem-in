@@ -27,7 +27,7 @@ func main() {
 		tunnels                []string
 		bfs                    []string
 		startRoom, starttunnel int
-		end, start             int
+		end, start,ant            int
 	)
 
 	for scanner.Scan() {
@@ -35,7 +35,7 @@ func main() {
 		bfs = append(bfs, line)
 	}
 	// ants, _ = strconv.Atoi(strings.TrimSpace(bfs[0]))
-
+	ant,_ = strconv.Atoi(bfs[0])
 	for i, ch := range bfs {
 		if ch == "##start" {
 			startant1 := bfs[i+1]
@@ -112,4 +112,25 @@ func contain(path []int, node int) bool {
 		}
 	}
 	return false
+}
+//track ant movement
+func simulateAntMovement(path [][]int, antCount int) [][]int{
+    if len(path) < 2 {
+        fmt.Println("Path is too short")
+    }
+	// start, end := path[0][0], path[0][len(path[0])-1]
+	antpositions := make([]int,antCount)
+	completed := 0
+	//we need to assign each ant a path to follow
+	antpaths := make([][]int,antCount)
+
+	//assign each ant to a path to follow. This is done by cycling through the available paths, even if there are more ants than paths.
+	for i:=0;i<antCount;i++ {
+		//assign each ant to start position they all start at one
+		antpositions[i]=path[i][0]
+		//cycle through the available paths, even if there are more ants than paths
+		paths := path[i%len(path)]
+		antpaths[i] = paths
+	}
+
 }
