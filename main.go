@@ -53,6 +53,7 @@ func main() {
 	// fbfs(starttunnel, endtunnel,)
 
 	graph := createGraph(rooms, tunnels)
+	// fmt.Println(graph)
 	path := BFS(graph, startRoom, starttunnel)
 	fmt.Println(sortPaths(path))
 	fmt.Println(ant)
@@ -115,18 +116,35 @@ func contain(path []int, node int) bool {
 	return false
 }
 
-type group map[int][][]int
-
-func sortPaths(paths [][]int) group {
-	if len(paths) == 0 {
-		return nil
-	}
-	groups := make(group)
-
-	for _, path := range paths {
-		if len(path) > 1 {
-			groups[path[1]] = append(groups[path[1]], path)
-		}
-	}
-	return groups
+func CollidingPaths(paths [][]int)[][]int {
+	collisions := make(map[int][]int)
+    for i, path1 := range paths{
+        for j := i + 1; j < len(paths); j++ { // Compare path1 with subsequent paths
+            path2 := paths[j]
+            for k := 1; k < len(path1)-1; k++ { // Skip start and end nodes in path1
+                for l := 1; l < len(path2)-1; l++ { // Skip start and end nodes in path2
+                    if path1[k] == path2[l] {
+                        // Record collision
+                        collisions[path1[k]] = append(collisions[path1[k]], i, j)
+                    }
+                }
+            }
+        }
+    }
+	
 }
+// type group map[int][][]int
+
+// func sortPaths(paths [][]int) group {
+// 	if len(paths) == 0 {
+// 		return nil
+// 	}
+// 	groups := make(group)
+
+// 	for _, path := range paths {
+// 		if len(path) > 1 {
+// 			groups[path[1]] = append(groups[path[1]], path)
+// 		}
+// 	}
+// 	return groups
+// }
