@@ -24,10 +24,10 @@ func main() {
 	var (
 		rooms []string
 		// ants int
-		tunnels                []string
-		bfs                    []string
-		startRoom, starttunnel int
-		end, start, ant        int
+		tunnels            []string
+		bfs                []string
+		startRoom            string
+		endRoom               string
 	)
 
 	for scanner.Scan() {
@@ -35,22 +35,26 @@ func main() {
 		bfs = append(bfs, line)
 	}
 	// ants, _ = strconv.Atoi(strings.TrimSpace(bfs[0]))
-	ant, _ = strconv.Atoi(bfs[0])
-	for i, ch := range bfs {
+	// ant, _ = strconv.Atoi(bfs[0])
+	i := 1
+	for _, ch := range bfs {
 		if ch == "##start" {
-			startant1 := bfs[i+1]
-			startRoom, _ = strconv.Atoi(string(startant1[0]))
-			start = i + 2
-		} else if ch == "##end" {
-			starttunnel1 := bfs[i+1]
-			starttunnel, _ = strconv.Atoi(string(starttunnel1[0]))
-			end = i
+			startRoom = bfs[i+1]
+			continue
 		}
-
+		if ch == "##end" {
+			endRoom = bfs[i+1]
+			continue
+		}
+		if strings.Contains(ch, "-") {
+			slice := strings.Split(ch, "-")
+			tunnels = append(tunnels, slice[0])
+			tunnels = append(tunnels, slice[0])
+		}else {
+			rooms = append(rooms, ch)
+		}
+		i++
 	}
-	rooms = append(rooms, bfs[start:end]...)
-	tunnels = append(tunnels, bfs[end+2:]...)
-	// fbfs(starttunnel, endtunnel,)
 
 	graph := createGraph(rooms, tunnels)
 	// fmt.Println(graph)
@@ -134,7 +138,7 @@ func CollidingPaths(paths [][]int) [][]int {
 }
 func FindCollisions(path1, path2 []int) bool {
 	for k := 1; k < len(path1)-1; k++ {
-		for l := 1; l < len(path2)-1; l++ { 
+		for l := 1; l < len(path2)-1; l++ {
 			if path1[k] == path2[l] {
 				return true
 			}
