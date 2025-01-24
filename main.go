@@ -55,7 +55,8 @@ func main() {
 	graph := createGraph(rooms, tunnels)
 	// fmt.Println(graph)
 	path := BFS(graph, startRoom, starttunnel)
-	fmt.Println(sortPaths(path))
+	fmt.Println(path)
+	fmt.Println(CollidingPaths(path))
 	fmt.Println(ant)
 
 }
@@ -117,47 +118,27 @@ func contain(path []int, node int) bool {
 }
 
 func CollidingPaths(paths [][]int)[][]int {
-	collisions := make(map[int][]int)
-	shortestPath := []int{}
+	// collisions := make(map[int][]int)
+	pathsToRemove := make(map[int]bool) 
+	// shortestPath := []int{}
     for i, path1 := range paths{
         for j := i + 1; j < len(paths); j++ { // Compare path1 with subsequent paths
             path2 := paths[j]
             for k := 1; k < len(path1)-1; k++ { // Skip start and end nodes in path1
                 for l := 1; l < len(path2)-1; l++ { // Skip start and end nodes in path2
                     if path1[k] == path2[l] {
-                        // Record collision
-                        collisions[path1[k]] = append(collisions[path1[k]], i, j)
+                      pathsToRemove[j]=true
                     }
                 }
             }
         }
     }
-	filteredPaths := [][]int{}
-    for i, path := range paths {
-        collided := false
-        for _, indices := range collisions {
-            for _, index := range indices {
-                if index == i { // Check if this path index is in collisions
-                    collided = true
-                    break
-                }
-            }
-            if collided {
-                break
-            }
-        }
-        if !collided {
-            filteredPaths = append(filteredPaths, path) // Keep paths without collisions
-        }
-		if shortestPath == nil || len(path) < len(shortestPath) {
-            shortestPath = path
-        }
-
+	updatedPaths := [][]int{}
+	for i, path := range paths {
+		if !pathsToRemove[i] {
+			updatedPaths = append(updatedPaths, path)
 		}
-	if len(filteredPaths) == 0 && shortestPath != nil {
-		filteredPaths = append(filteredPaths, shortestPath)
 	}
 
-    return filteredPaths
-
+    return updatedPaths
 }
