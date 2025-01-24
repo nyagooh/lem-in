@@ -55,7 +55,8 @@ func main() {
 	graph := createGraph(rooms, tunnels)
 	// fmt.Println(graph)
 	path := BFS(graph, startRoom, starttunnel)
-	fmt.Println(path)
+	// fmt.Println(path)
+
 	fmt.Println(CollidingPaths(path))
 	fmt.Println(ant)
 
@@ -117,28 +118,36 @@ func contain(path []int, node int) bool {
 	return false
 }
 
-func CollidingPaths(paths [][]int)[][]int {
-	// collisions := make(map[int][]int)
-	pathsToRemove := make(map[int]bool) 
-	// shortestPath := []int{}
-    for i, path1 := range paths{
-        for j := i + 1; j < len(paths); j++ { // Compare path1 with subsequent paths
-            path2 := paths[j]
-            for k := 1; k < len(path1)-1; k++ { // Skip start and end nodes in path1
-                for l := 1; l < len(path2)-1; l++ { // Skip start and end nodes in path2
-                    if path1[k] == path2[l] {
-                      pathsToRemove[j]=true
-                    }
-                }
-            }
-        }
-    }
+func CollidingPaths(paths [][]int) [][]int {
+	i := 0
+	for i < len(paths) {
+		pathsToRemove := make(map[int]bool)
+		for j := i + 1; j < len(paths); j++ {
+			if FindCollisions(paths[i], paths[j]) {
+				pathsToRemove[j] = true
+			}
+		}
+		paths = RemovePaths(paths, pathsToRemove)
+		i++
+	}
+	return paths
+}
+func FindCollisions(path1, path2 []int) bool {
+	for k := 1; k < len(path1)-1; k++ {
+		for l := 1; l < len(path2)-1; l++ { 
+			if path1[k] == path2[l] {
+				return true
+			}
+		}
+	}
+	return false
+}
+func RemovePaths(paths [][]int, pathsToRemove map[int]bool) [][]int {
 	updatedPaths := [][]int{}
-	for i, path := range paths {
-		if !pathsToRemove[i] {
+	for idx, path := range paths {
+		if !pathsToRemove[idx] {
 			updatedPaths = append(updatedPaths, path)
 		}
 	}
-
-    return updatedPaths
+	return updatedPaths
 }
