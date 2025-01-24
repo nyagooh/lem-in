@@ -118,6 +118,7 @@ func contain(path []int, node int) bool {
 
 func CollidingPaths(paths [][]int)[][]int {
 	collisions := make(map[int][]int)
+	shortestPath := []int{}
     for i, path1 := range paths{
         for j := i + 1; j < len(paths); j++ { // Compare path1 with subsequent paths
             path2 := paths[j]
@@ -131,20 +132,32 @@ func CollidingPaths(paths [][]int)[][]int {
             }
         }
     }
-	
+	filteredPaths := [][]int{}
+    for i, path := range paths {
+        collided := false
+        for _, indices := range collisions {
+            for _, index := range indices {
+                if index == i { // Check if this path index is in collisions
+                    collided = true
+                    break
+                }
+            }
+            if collided {
+                break
+            }
+        }
+        if !collided {
+            filteredPaths = append(filteredPaths, path) // Keep paths without collisions
+        }
+		if shortestPath == nil || len(path) < len(shortestPath) {
+            shortestPath = path
+        }
+
+		}
+	if len(filteredPaths) == 0 && shortestPath != nil {
+		filteredPaths = append(filteredPaths, shortestPath)
+	}
+
+    return filteredPaths
+
 }
-// type group map[int][][]int
-
-// func sortPaths(paths [][]int) group {
-// 	if len(paths) == 0 {
-// 		return nil
-// 	}
-// 	groups := make(group)
-
-// 	for _, path := range paths {
-// 		if len(path) > 1 {
-// 			groups[path[1]] = append(groups[path[1]], path)
-// 		}
-// 	}
-// 	return groups
-// }
