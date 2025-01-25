@@ -26,8 +26,10 @@ func main() {
 		// ants int
 		tunnels            []string
 		bfs                []string
-		startRoom            string
-		endRoom               string
+		startRoom            int
+		endRoom               int
+		ant                  int
+		room,room1    string
 	)
 
 	for scanner.Scan() {
@@ -38,28 +40,32 @@ func main() {
 	// ant, _ = strconv.Atoi(bfs[0])
 	i := 1
 	for _, ch := range bfs {
+		if ch == bfs[0] {
+			ant,_ = strconv.Atoi(ch)
+			continue
+		}
 		if ch == "##start" {
-			startRoom = bfs[i+1]
+			room1 = bfs[i+1]
+			startRoom,_=strconv.Atoi(room1)
 			continue
 		}
 		if ch == "##end" {
-			endRoom = bfs[i+1]
+			room = bfs[i+1]
+			endRoom,_ = strconv.Atoi(string(room[0]))
 			continue
 		}
 		if strings.Contains(ch, "-") {
-			slice := strings.Split(ch, "-")
-			tunnels = append(tunnels, slice[0])
-			tunnels = append(tunnels, slice[0])
-		}else {
-			rooms = append(rooms, ch)
+			tunnels = append(tunnels, ch)
+		} else if ch != bfs[0] && ch != room1 && ch != room {
+	     	rooms = append(rooms, ch)
 		}
+	
 		i++
 	}
-
 	graph := createGraph(rooms, tunnels)
 	// fmt.Println(graph)
-	path := BFS(graph, startRoom, starttunnel)
-	// fmt.Println(path)
+	path := BFS(graph, startRoom, endRoom)
+	fmt.Println(path)
 
 	fmt.Println(CollidingPaths(path))
 	fmt.Println(ant)
