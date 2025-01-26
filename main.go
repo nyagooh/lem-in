@@ -10,7 +10,6 @@ import (
 
 func main() {
 
-	//readfile from the command line
 	filePath := os.Args[1]
 
 	file, err := os.Open(filePath)
@@ -23,7 +22,7 @@ func main() {
 
 	var (
 		rooms []string
-		// ants int
+
 		tunnels     []string
 		bfs         []string
 		startRoom   int
@@ -36,8 +35,7 @@ func main() {
 		line := scanner.Text()
 		bfs = append(bfs, line)
 	}
-	// ants, _ = strconv.Atoi(strings.TrimSpace(bfs[0]))
-	// ant, _ = strconv.Atoi(bfs[0])
+
 	i := 1
 	for _, ch := range bfs {
 		if ch == bfs[0] {
@@ -51,7 +49,6 @@ func main() {
 		}
 		if ch == "##end" {
 			room = bfs[i+2]
-			fmt.Println(room)
 			endRoom, _ = strconv.Atoi(string(room[0]))
 			continue
 		}
@@ -64,29 +61,22 @@ func main() {
 		i++
 	}
 	graph := createGraph(rooms, tunnels)
-	fmt.Println(startRoom)
-	fmt.Println(graph)
 	path := BFS(graph, startRoom, endRoom)
-	fmt.Println(path)
 	fmt.Println(CollidingPaths(path))
-	fmt.Println(ant)
+	fmt.Println(Antnames(ant))
 
 }
 
-// this graph takes in the rooms and the connections to the room
 type Graph map[int][]int
 
 func createGraph(rooms []string, tunnels []string) Graph {
-	//reference the type of the graph.so the graph created is a map that has keys of type int and values of type []int
 	graph := make(Graph)
 
-	// fromm data give each room is rep by three values that is wahy we increment by 3
 	for i := 0; i < len(rooms); i += 3 {
 		node, _ := strconv.Atoi(rooms[i])
 		graph[node] = []int{}
 	}
 
-	// each tunnel is a string like 0-1.meaning room 0 connect to room 1.We using same graph because the tunnels represent connection between rooms
 	for _, tunnel := range tunnels {
 		parts := strings.Split(tunnel, "-")
 		from, _ := strconv.Atoi(parts[0])
@@ -161,4 +151,13 @@ func RemovePaths(paths [][]int, pathsToRemove map[int]bool) [][]int {
 		}
 	}
 	return updatedPaths
+}
+
+func Antnames(ant int) []string {
+	antnames := []string{}
+	for i := 1; i <= ant; i++ {
+		name := fmt.Sprintf("l%d", i)
+		antnames = append(antnames, name)
+	}
+	return antnames
 }
