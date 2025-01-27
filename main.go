@@ -62,8 +62,9 @@ func main() {
 	}
 	graph := createGraph(rooms, tunnels)
 	path := BFS(graph, startRoom, endRoom)
-	fmt.Println(CollidingPaths(path))
-	fmt.Println(Antnames(ant))
+	filter := CollidingPaths(path)
+	antname := Antnames(ant)
+	fmt.Println(DistributePath(antname,filter))
 
 }
 
@@ -160,4 +161,24 @@ func Antnames(ant int) []string {
 		antnames = append(antnames, name)
 	}
 	return antnames
+}
+func DistributePath(antnames []string, paths [][]int) map[string][]int {
+	pathassignments := make(map[string][]int)
+	pathslength := make([]int, len(paths))
+	for i, path := range paths {
+		pathslength[i] = len(path)
+	}
+
+	for _, ant := range antnames {
+		shortest := 0
+		for i := 0; i < len(paths); i++ {
+			if pathslength[i] < pathslength[shortest] {
+				shortest = i
+
+			}
+			pathassignments[ant] = paths[shortest]
+			pathslength[shortest]++
+		}
+	}
+	return pathassignments
 }
