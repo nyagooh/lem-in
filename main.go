@@ -193,11 +193,11 @@ func PrintPaths(assigned map[string][]int) {
 	for i := 0; i < len(keys);{
 		keyA := keys[i]
 		valuesA := assigned[keyA]
-		for j := i + 1; j < len(keys); j++ {
+		for j := 1; j < len(keys); j++ {
 			keyB := keys[j]
 			valuesB := assigned[keyB]
 			if !compare2Arrays(valuesA, valuesB) {
-				fmt.Println("yeah")
+				fmt.Println(valuesA[j],valuesB[j])
 			}
 		}
 		i++
