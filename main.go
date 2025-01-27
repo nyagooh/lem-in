@@ -159,7 +159,7 @@ func RemovePaths(paths [][]int, pathsToRemove map[int]bool) [][]int {
 func Antnames(ant int) []string {
 	antnames := []string{}
 	for i := 1; i <= ant; i++ {
-		name := fmt.Sprintf("l%d", i)
+		name := fmt.Sprintf("L%d", i)
 		antnames = append(antnames, name)
 	}
 	return antnames
