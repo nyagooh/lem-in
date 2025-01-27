@@ -65,8 +65,7 @@ func main() {
 	filter := CollidingPaths(path)
 	antname := Antnames(ant)
 	distribute := DistributePath(antname, filter)
-	fmt.Println(distribute)
-	fmt.Println(compare2Arrays([]int{1, 2, 3}, []int{1, 2, 3}))
+	PrintPaths(distribute)
 
 }
 
@@ -187,7 +186,23 @@ func DistributePath(antnames []string, paths [][]int) map[string][]int {
 }
 
 func PrintPaths(assigned map[string][]int) {
-	
+	var keys []string
+	for key := range assigned {
+		keys = append(keys, key)
+	}
+	for i := 0; i < len(keys);{
+		keyA := keys[i]
+		valuesA := assigned[keyA]
+		for j := i + 1; j < len(keys); j++ {
+			keyB := keys[j]
+			valuesB := assigned[keyB]
+			if !compare2Arrays(valuesA, valuesB) {
+				fmt.Println("yeah")
+			}
+		}
+		i++
+	}
+	fmt.Println("nope")
 }
 
 func compare2Arrays(a, b []int) bool {
