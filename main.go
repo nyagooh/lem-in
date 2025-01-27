@@ -64,8 +64,9 @@ func main() {
 	path := BFS(graph, startRoom, endRoom)
 	filter := CollidingPaths(path)
 	antname := Antnames(ant)
-	distribute := DistributePath(antname,filter)
+	distribute := DistributePath(antname, filter)
 	fmt.Println(distribute)
+	fmt.Println(compare2Arrays([]int{1, 2, 3}, []int{1, 2, 3}))
 
 }
 
@@ -183,4 +184,21 @@ func DistributePath(antnames []string, paths [][]int) map[string][]int {
 		}
 	}
 	return pathassignments
+}
+
+func PrintPaths(assigned map[string][]int) {
+	
+}
+
+func compare2Arrays(a, b []int) bool {
+	for i := 0; i < len(a); {
+		for j := 0; j < len(b); j++ {
+			if a[i] != b[j] {
+				return false
+			}
+			i++
+		}
+
+	}
+	return true
 }
