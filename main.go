@@ -9,7 +9,6 @@ import (
 )
 
 func main() {
-
 	filePath := os.Args[1]
 
 	file, err := os.Open(filePath)
@@ -66,7 +65,6 @@ func main() {
 	antname := Antnames(ant)
 	distribute := DistributePath(antname, filter)
 	PrintPaths(distribute)
-
 }
 
 type Graph map[int][]int
@@ -89,6 +87,7 @@ func createGraph(rooms []string, tunnels []string) Graph {
 
 	return graph
 }
+
 func BFS(graph Graph, start, end int) [][]int {
 	var paths [][]int
 	queue := [][]int{{start}}
@@ -112,6 +111,7 @@ func BFS(graph Graph, start, end int) [][]int {
 
 	return paths
 }
+
 func contain(path []int, node int) bool {
 	for _, n := range path {
 		if n == node {
@@ -135,6 +135,7 @@ func CollidingPaths(paths [][]int) [][]int {
 	}
 	return paths
 }
+
 func FindCollisions(path1, path2 []int) bool {
 	for k := 1; k < len(path1)-1; k++ {
 		for l := 1; l < len(path2)-1; l++ {
@@ -145,6 +146,7 @@ func FindCollisions(path1, path2 []int) bool {
 	}
 	return false
 }
+
 func RemovePaths(paths [][]int, pathsToRemove map[int]bool) [][]int {
 	updatedPaths := [][]int{}
 	for idx, path := range paths {
@@ -163,6 +165,7 @@ func Antnames(ant int) []string {
 	}
 	return antnames
 }
+
 func DistributePath(antnames []string, paths [][]int) map[string][]int {
 	pathassignments := make(map[string][]int)
 
@@ -176,7 +179,6 @@ func DistributePath(antnames []string, paths [][]int) map[string][]int {
 		for i := 0; i < len(paths); i++ {
 			if pathslength[i] < pathslength[shortest] {
 				shortest = i
-
 			}
 			pathassignments[ant] = paths[shortest]
 			pathslength[shortest]++
@@ -185,35 +187,113 @@ func DistributePath(antnames []string, paths [][]int) map[string][]int {
 	return pathassignments
 }
 
-func PrintPaths(assigned map[string][]int) {
-	var keys []string
-	for key := range assigned {
-		keys = append(keys, key)
-	}
-	for i := 0; i < len(keys);{
-		keyA := keys[i]
-		valuesA := assigned[keyA]
-		for j := 1; j < len(keys); j++ {
-			keyB := keys[j]
-			valuesB := assigned[keyB]
-			if !compare2Arrays(valuesA, valuesB) {
-				fmt.Println(valuesA[j],valuesB[j])
-			}
-		}
-		i++
-	}
-	fmt.Println("nope")
+// func PrintPaths(assigned map[string][]int) {
+// 	var keys []string
+// 	for key := range assigned {
+// 		keys = append(keys, key)
+// 	}
+// 	for i := 0; i < len(keys);{
+// 		keyA := keys[i]
+// 		valuesA := assigned[keyA]
+// 		for j := 1; j < len(keys); j++ {
+// 			keyB := keys[j]
+// 			valuesB := assigned[keyB]
+// 			if !compare2Arrays(valuesA, valuesB) {
+// 				fmt.Println("yeah")
+// 			}
+// 		}
+// 		i++
+// 	}
+// 	fmt.Println("nope")
+// }
+
+// func compare2Arrays(a, b []int) bool {
+// 	for i := 0; i < len(a); {
+// 		for j := 0; j < len(b); j++ {
+// 			if a[i] != b[j] {
+// 				return false
+// 			}
+// 			i++
+// 		}
+
+// 	}
+// 	return true
+// }
+
+// Route struct to represent a route with an ant and rooms visited
+type Route struct {
+	ant   string
+	rooms map[string]bool
 }
 
-func compare2Arrays(a, b []int) bool {
-	for i := 0; i < len(a); {
-		for j := 0; j < len(b); j++ {
-			if a[i] != b[j] {
-				return false
-			}
-			i++
+// PrintPaths prints the paths based on the assigned routes
+func PrintPaths(assigned map[string][]int) [][]string {
+	var turns [][]string
+	var paths [][]interface{}
+
+	// Convert assigned map to paths (with keys and values)
+	for key, value := range assigned {
+		antPath := []interface{}{key}
+		for _, room := range value {
+			antPath = append(antPath, room)
+		}
+		paths = append(paths, antPath)
+	}
+
+	// Initialize routes and turns
+	route := make([]Route, len(paths))
+	// check := false
+
+	// Populate the route information
+	for i, path := range paths {
+		route[i] = Route{
+			ant:   path[0].(string),
+			rooms: make(map[string]bool),
 		}
 
+		// Iterate through the path and manage turns
+		for j := 2; j < len(path); j++ {
+			room := fmt.Sprintf("%v", path[j])
+			// If the room is not already in the route, add it
+			if !route[i].rooms[room] {
+				route[i].rooms[room] = true
+
+				// Prepare the new move string
+				move := fmt.Sprintf("%v-%v", route[i].ant, room)
+
+				// Check if we need to create a new turn
+				turnAdded := false
+				for t := 0; t < len(turns); t++ {
+					if !checkTurn(turns[t], move) {
+						turns[t] = append(turns[t], move)
+						turnAdded = true
+						break
+					}
+				}
+
+				// If no matching turn was found, create a new turn
+				if !turnAdded {
+					turns = append(turns, []string{move})
+				}
+			}
+		}
 	}
-	return true
+
+	// Print the results
+	for _, turn := range turns {
+		fmt.Println(turn)
+	}
+	fmt.Println(route)
+
+	return nil
+}
+
+// checkTurn checks if the move already exists in the turn
+func checkTurn(turn []string, move string) bool {
+	for _, t := range turn {
+		if strings.Contains(t, move) {
+			return true
+		}
+	}
+	return false
 }
