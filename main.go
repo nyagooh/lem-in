@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -189,12 +190,27 @@ func DistributePath(antnames []string, paths [][]int) map[string][]int {
 
 // i want to print each index of the map
 func PrintPaths(paths map[string][]int) {
+	maxSteps := 0
+	var ants []string
 	for ant, path := range paths {
-		fmt.Printf("%s ",ant)
-		for i:=1;i < len(path);i++{
-		 fmt.Printf("%d ",path[i])
+		if steps := len(path) - 1; steps > maxSteps {
+			maxSteps = steps
 		}
-		fmt.Println()
+		ants = append(ants, ant)
+	}
+	sort.Strings(ants) 
+
+	for step := 1; step <= maxSteps; step++ {
+		var output []string
+		for _, ant := range ants {
+			path := paths[ant]
+			if step < len(path) { // Check if the step exists for this ant
+				output = append(output, fmt.Sprintf("%s %d", ant, path[step]))
+			}
+		}
+		if len(output) > 0 {
+			fmt.Println(strings.Join(output, " "))
+		}
 	}
 }
 
