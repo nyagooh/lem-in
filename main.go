@@ -176,7 +176,7 @@ func DistributePath(antnames []string, paths [][]int) map[string][]int {
 	}
 
 	for _, ant := range antnames {
-		shortest := 1
+		shortest := 0
 		for i := 0; i < len(paths); i++ {
 			if pathslength[i] < pathslength[shortest] {
 				shortest = i
@@ -189,138 +189,59 @@ func DistributePath(antnames []string, paths [][]int) map[string][]int {
 }
 
 // i want to print each index of the map
-func PrintPaths(paths map[string][]int) {
-	maxSteps := 0
-	var ants []string
-	for ant, path := range paths {
-		if steps := len(path) - 1; steps > maxSteps {
-			maxSteps = steps
-		}
-		ants = append(ants, ant)
-	}
-	sort.Strings(ants) 
-
-	for step := 1; step <= maxSteps; step++ {
-		var output []string
-		for _, ant := range ants {
-			path := paths[ant]
-			if step < len(path) { // Check if the step exists for this ant
-				output = append(output, fmt.Sprintf("%s %d", ant, path[step]))
-			}
-		}
-		if len(output) > 0 {
-			fmt.Println(strings.Join(output, " "))
-		}
-	}
+type AntProgress struct {
+	Name  string
+	Path  []int
+	Index int // Next room index to move into (0-based)
 }
 
-// // func PrintPaths(assigned map[string][]int) {
-// // 	var keys []string
-// // 	for key := range assigned {
-// // 		keys = append(keys, key)
-// // 	}
-// // 	for i := 0; i < len(keys);{
-// // 		keyA := keys[i]
-// // 		valuesA := assigned[keyA]
-// // 		for j := 1; j < len(keys); j++ {
-// // 			keyB := keys[j]
-// // 			valuesB := assigned[keyB]
-// // 			if !compare2Arrays(valuesA, valuesB) {
-// // 				fmt.Println("yeah")
-// // 			}
-// // 		}
-// // 		i++
-// // 	}
-// // 	fmt.Println("nope")
-// // }
+func PrintPaths(paths map[string][]int) {
+	// Convert paths to a sorted list of ants with their progress
+	var ants []*AntProgress
+	for name, path := range paths {
+		ants = append(ants, &AntProgress{
+			Name:  name,
+			Path:  path,
+			Index: 1,
+		})
+	}
+	// Sort ants lexicographically (L1, L2, L3...)
+	sort.Slice(ants, func(i, j int) bool {
+		return ants[i].Name < ants[j].Name
+	})
 
-// // func compare2Arrays(a, b []int) bool {
-// // 	for i := 0; i < len(a); {
-// // 		for j := 0; j < len(b); j++ {
-// // 			if a[i] != b[j] {
-// // 				return false
-// // 			}
-// // 			i++
-// // 		}
+	// Simulate steps until all ants finish
+	for {
+		targetRooms := make(map[int]bool) // Tracks non-exit rooms being targeted
+		var moves []string                // Collect moves for this step
+		anyMoves := false
 
-// // 	}
-// // 	return true
-// // }
+		// Process each ant in order
+		for _, ant := range ants {
+			if ant.Index >= len(ant.Path) {
+				continue // Ant has already finished
+			}
+			targetRoom := ant.Path[ant.Index]
 
-// // Route struct to represent a route with an ant and rooms visited
-// type Route struct {
-// 	ant   string
-// 	rooms map[string]bool
-// }
+			if targetRoom == 0 { 
+				// Allow multiple ants to exit in the same step
+				moves = append(moves, fmt.Sprintf("%s %d", ant.Name, targetRoom))
+				ant.Index++
+				anyMoves = true
+			} else {
+				if !targetRooms[targetRoom] { // Room is available
+					targetRooms[targetRoom] = true
+					moves = append(moves, fmt.Sprintf("%s %d", ant.Name, targetRoom))
+					ant.Index++
+					anyMoves = true
+				}
+				// Else: ant waits (no action)
+			}
+		}
 
-// // PrintPaths prints the paths based on the assigned routes
-// func PrintPaths(assigned map[string][]int) [][]string {
-// 	var turns [][]string
-// 	var paths [][]interface{}
-
-// 	// Convert assigned map to paths (with keys and values)
-// 	for key, value := range assigned {
-// 		antPath := []interface{}{key}
-// 		for _, room := range value {
-// 			antPath = append(antPath, room)
-// 		}
-// 		paths = append(paths, antPath)
-// 	}
-
-// 	// Initialize routes and turns
-// 	route := make([]Route, len(paths))
-// 	// check := false
-
-// 	// Populate the route information
-// 	for i, path := range paths {
-// 		route[i] = Route{
-// 			ant:   path[0].(string),
-// 			rooms: make(map[string]bool),
-// 		}
-
-// 		// Iterate through the path and manage turns
-// 		for j := 2; j < len(path); j++ {
-// 			room := fmt.Sprintf("%v", path[j])
-// 			// If the room is not already in the route, add it
-// 			if !route[i].rooms[room] {
-// 				route[i].rooms[room] = true
-
-// 				// Prepare the new move string
-// 				move := fmt.Sprintf("%v-%v", route[i].ant, room)
-
-// 				// Check if we need to create a new turn
-// 				turnAdded := false
-// 				for t := 0; t < len(turns); t++ {
-// 					if !checkTurn(turns[t], move) {
-// 						turns[t] = append(turns[t], move)
-// 						turnAdded = true
-// 						break
-// 					}
-// 				}
-
-// 				// If no matching turn was found, create a new turn
-// 				if !turnAdded {
-// 					turns = append(turns, []string{move})
-// 				}
-// 			}
-// 		}
-// 	}
-
-// 	// Print the results
-// 	for _, turn := range turns {
-// 		fmt.Println(turn)
-// 	}
-// 	fmt.Println(route)
-
-// 	return nil
-// }
-
-// // checkTurn checks if the move already exists in the turn
-// func checkTurn(turn []string, move string) bool {
-// 	for _, t := range turn {
-// 		if strings.Contains(t, move) {
-// 			return true
-// 		}
-// 	}
-// 	return false
-// }
+		if !anyMoves {
+			break // All ants have finished
+		}
+		fmt.Println(strings.Join(moves, " "))
+	}
+}
